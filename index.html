@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; justify-content: center; }
+        .cell { width: 100px; height: 100px; font-size: 2em; display: flex; align-items: center; justify-content: center; background: #ddd; cursor: pointer; }
+        .cell:hover { background: #bbb; }
+        .winner { font-size: 1.5em; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Velha</h1>
+    <div class="grid" id="board"></div>
+    <p class="winner" id="winner"></p>
+    <button onclick="resetGame()">Reiniciar</button>
+
+    <script>
+        const board = document.getElementById("board");
+        const winnerText = document.getElementById("winner");
+        let currentPlayer = "X";
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+
+        function createBoard() {
+            board.innerHTML = "";
+            gameState.forEach((value, index) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.textContent = value;
+                cell.onclick = () => makeMove(index);
+                board.appendChild(cell);
+            });
+        }
+
+        function makeMove(index) {
+            if (gameState[index] || checkWinner()) return;
+            gameState[index] = currentPlayer;
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            createBoard();
+            checkWinner();
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            for (const combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    winnerText.textContent = `Vencedor: ${gameState[a]}`;
+                    return true;
+                }
+            }
+
+            if (!gameState.includes("")) {
+                winnerText.textContent = "Empate!";
+                return true;
+            }
+
+            return false;
+        }
+
+        function resetGame() {
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            winnerText.textContent = "";
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
